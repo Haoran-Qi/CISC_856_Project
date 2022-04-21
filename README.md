@@ -18,3 +18,7 @@ Highly suggest to use Anaconda to create a environment meets following requiment
 |numpy|1.16.4|
 |pandas|1.0.3|
 |gym|0.15.3|
+
+### Agent Performance
+
+![alt text](https://github.com/Haoran-Qi/CISC_856_Project/blob/main/figures/output.png)
