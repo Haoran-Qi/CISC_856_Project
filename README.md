@@ -3,9 +3,10 @@ RL Stock Analysis
 
 ### How to Train
 
-Highly suggest to use Anaconda to create a environment meets following requiment table
-
+run following comman to train 
 `python run_DRL.py`
+
+Highly suggest to use Anaconda to create a environment meets following requiment table
 
 ### Environment Requirment
 
