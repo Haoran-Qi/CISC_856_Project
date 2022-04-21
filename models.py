@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import gym
+import json
 
 # RL models from stable-baselines
 from stable_baselines import GAIL, SAC
@@ -16,8 +17,10 @@ from stable_baselines.ddpg.policies import DDPGPolicy
 from stable_baselines.common.policies import MlpPolicy, MlpLstmPolicy, MlpLnLstmPolicy
 from stable_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise, AdaptiveParamNoiseSpec
 from stable_baselines.common.vec_env import DummyVecEnv
-from preprocessors import *
-from configs import *
+from preprocessing.preprocessors import *
+from config import config
+
+import pdb
 
 # customized env
 from env.EnvMultipleStock_train import StockEnvTrain
@@ -33,7 +36,7 @@ def train_A2C(env_train, model_name, timesteps=25000):
     model.learn(total_timesteps=timesteps)
     end = time.time()
 
-    model.save(f"{TRAINED_MODEL_DIR}/{model_name}")
+    model.save(f"{config.TRAINED_MODEL_DIR}/{model_name}")
     print('Training time (A2C): ', (end - start) / 60, ' minutes')
     return model
 
@@ -43,7 +46,7 @@ def train_ACER(env_train, model_name, timesteps=25000):
     model.learn(total_timesteps=timesteps)
     end = time.time()
 
-    model.save(f"{TRAINED_MODEL_DIR}/{model_name}")
+    model.save(f"{config.TRAINED_MODEL_DIR}/{model_name}")
     print('Training time (A2C): ', (end - start) / 60, ' minutes')
     return model
 
@@ -61,7 +64,7 @@ def train_DDPG(env_train, model_name, timesteps=10000):
     model.learn(total_timesteps=timesteps)
     end = time.time()
 
-    model.save(f"{TRAINED_MODEL_DIR}/{model_name}")
+    model.save(f"{config.TRAINED_MODEL_DIR}/{model_name}")
     print('Training time (DDPG): ', (end-start)/60,' minutes')
     return model
 
@@ -75,7 +78,7 @@ def train_PPO(env_train, model_name, timesteps=50000):
     model.learn(total_timesteps=timesteps)
     end = time.time()
 
-    model.save(f"{TRAINED_MODEL_DIR}/{model_name}")
+    model.save(f"{config.TRAINED_MODEL_DIR}/{model_name}")
     print('Training time (PPO): ', (end - start) / 60, ' minutes')
     return model
 
@@ -94,7 +97,7 @@ def train_GAIL(env_train, model_name, timesteps=1000):
     model.learn(total_timesteps=1000)
     end = time.time()
 
-    model.save(f"{TRAINED_MODEL_DIR}/{model_name}")
+    model.save(f"{config.TRAINED_MODEL_DIR}/{model_name}")
     print('Training time (PPO): ', (end - start) / 60, ' minutes')
     return model
 
@@ -262,6 +265,15 @@ def run_ensemble_strategy(df, unique_trade_date, rebalance_window, validation_wi
             model_ensemble = model_ddpg
             model_use.append('DDPG')
         ############## Training and Validation ends ##############
+        sharpe_data= {
+            "ppo_sharpe_list": ppo_sharpe_list,
+            "a2c_sharpe_list":a2c_sharpe_list,
+            "ddpg_sharpe_list":ddpg_sharpe_list,
+            "model_use": model_use
+        }
+        json_string = json.dumps(sharpe_data)
+        with open('json_data.json', 'w') as outfile:
+            json.dump(json_string, outfile)
 
         ############## Trading starts ##############
         print("======Trading from: ", unique_trade_date[i - rebalance_window], "to ", unique_trade_date[i])
